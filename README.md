@@ -61,6 +61,19 @@ llamafactory-cli train configs/your_config.yaml
 docker build -t llama-factory-template .
 ```
 
+### Build Arguments
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `LLAMAFACTORY_VERSION` | `0.9.4` | LLaMA Factory base image version |
+| `FLASH_ATTN_VERSION` | `2.7.4` | Flash Attention version (for logging) |
+| `USER_ID` | `1000` | UID for non-root user |
+| `GROUP_ID` | `1000` | GID for non-root user |
+
+```bash
+docker build --build-arg LLAMAFACTORY_VERSION=0.9.4 -t llama-factory-template .
+```
+
 ## License
 
 MIT

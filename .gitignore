@@ -1,2 +1,42 @@
 .DS_Store
 *.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Training artifacts
+models/
+outputs/
+checkpoints/
+*.pt
+*.pth
+*.safetensors
+*.gguf
+
+# Data
+data/
+datasets/
+
+# Logs
+logs/
+tensorboard/
+wandb/
