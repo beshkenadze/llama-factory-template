@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
     echo "deb [signed-by=/usr/share/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable" > /etc/apt/sources.list.d/syncthing.list && \
     apt-get update && apt-get install -y --no-install-recommends syncthing && \
     curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get purge -y gnupg && apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PATH="/root/.local/bin:$PATH"
 
@@ -21,15 +22,13 @@ RUN groupadd -g ${GROUP_ID} llama && \
     useradd -m -u ${USER_ID} -g llama -s /bin/bash llama && \
     echo "llama ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install logging/tracking tools (tensorboard, wandb, mlflow)
-RUN uv pip install --system tensorboard wandb mlflow
-
-
-# Install flash-attention (optional, warns on failure)
+# Install logging/tracking tools (tensorboard, wandb, mlflow) + flash-attention
 ARG FLASH_ATTN_VERSION=2.7.4
 ARG FLASH_ATTN_WHEEL=https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.7.4%2Bcu124torch2.5-cp311-cp311-linux_x86_64.whl
-RUN uv pip install --system --no-deps ${FLASH_ATTN_WHEEL} \
-    || echo "WARNING: flash-attention ${FLASH_ATTN_VERSION} install failed - continuing without it"
+RUN uv pip install --system tensorboard wandb mlflow && \
+    (uv pip install --system --no-deps ${FLASH_ATTN_WHEEL} \
+    || echo "WARNING: flash-attention ${FLASH_ATTN_VERSION} install failed - continuing without it") && \
+    rm -rf /root/.cache/pip /root/.cache/uv /tmp/*
 
 WORKDIR /workspace
 
