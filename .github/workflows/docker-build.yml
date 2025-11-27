@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     tags: ['v*']
     paths:
       - 'Dockerfile'
+      - 'Dockerfile.vastai'
       - '.github/workflows/docker-build.yml'
   pull_request:
     branches: [main]
@@ -15,9 +16,10 @@ env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository }}
   LLAMAFACTORY_VERSION: '0.9.4'
+  VASTAI_VERSION: 'cuda-12.4.1-auto'
 
 jobs:
-  build-and-push:
+  build-llamafactory:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -63,6 +65,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -70,3 +73,58 @@ jobs:
             LLAMAFACTORY_VERSION=${{ env.LLAMAFACTORY_VERSION }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: ${{ github.event_name != 'pull_request' && format('type=registry,ref={0}/{1}:buildcache,mode=max', env.REGISTRY, env.IMAGE_NAME) || '' }}
+
+  build-vastai:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=vastai,enable={{is_default_branch}}
+            type=raw,value=vastai-${{ env.VASTAI_VERSION }},enable={{is_default_branch}}
+            type=semver,pattern={{version}}-vastai
+            type=sha,prefix=vastai-
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.vastai
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VASTAI_VERSION=${{ env.VASTAI_VERSION }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-vastai
+          cache-to: ${{ github.event_name != 'pull_request' && format('type=registry,ref={0}/{1}:buildcache-vastai,mode=max', env.REGISTRY, env.IMAGE_NAME) || '' }}
