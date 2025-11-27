@@ -24,6 +24,7 @@ RUN groupadd -g ${GROUP_ID} llama && \
 # Install logging/tracking tools (tensorboard, wandb, mlflow)
 RUN uv pip install --system tensorboard wandb mlflow
 
+
 # Install flash-attention (optional, warns on failure)
 ARG FLASH_ATTN_VERSION=2.7.4
 ARG FLASH_ATTN_WHEEL=https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.7.4%2Bcu124torch2.5-cp311-cp311-linux_x86_64.whl
@@ -39,7 +40,7 @@ EXPOSE 6006 8384 22000
 RUN mkdir -p /workspace && chown -R llama:llama /workspace
 
 # Startup script (only exports safe env vars, not secrets)
-RUN printf '#!/bin/bash\n# Export only non-sensitive env vars for cron/subprocess compatibility\nenv | grep -E "^(PATH|HOME|LANG|LC_|TERM|SHELL|USER|HOSTNAME)=" >> /etc/environment 2>/dev/null || true\nsyncthing --no-browser --gui-address=0.0.0.0:8384 &\n[ -d "/workspace/models" ] && tensorboard --logdir=/workspace/models --host=0.0.0.0 --port=6006 &\nexec "$@"\n' > /opt/startup.sh && \
+RUN printf '#!/bin/bash\n# Export only non-sensitive env vars for cron/subprocess compatibility\nenv | grep -E "^(PATH|HOME|LANG|LC_|TERM|SHELL|USER|HOSTNAME)=" >> /etc/environment 2>/dev/null || true\n# Auto-login wandb if API key is set (skips interactive menu)\n[ -n "$WANDB_API_KEY" ] && python -c "import wandb; wandb.login(key=\\\"$WANDB_API_KEY\\\")"\nsyncthing --no-browser --gui-address=0.0.0.0:8384 &\n[ -d "/workspace/models" ] && tensorboard --logdir=/workspace/models --host=0.0.0.0 --port=6006 &\nexec "$@"\n' > /opt/startup.sh && \
     chmod +x /opt/startup.sh
 
 # Switch to non-root user
