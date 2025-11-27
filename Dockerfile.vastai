@@ -12,8 +12,8 @@ RUN pip install --no-cache-dir llamafactory && \
 # Install logging/tracking tools + flash-attention
 ARG FLASH_ATTN_VERSION=2.7.4
 ARG FLASH_ATTN_WHEEL=https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.7.4%2Bcu124torch2.5-cp311-cp311-linux_x86_64.whl
-RUN pip install --no-cache-dir wandb mlflow && \
-    (pip install --no-cache-dir --no-deps ${FLASH_ATTN_WHEEL} \
+RUN pip install --no-cache-dir wandb mlflow "optimum>=1.24.0" "gptqmodel>=2.0.0" && \
+    (pip install --no-cache-dir ${FLASH_ATTN_WHEEL} \
     || echo "WARNING: flash-attention ${FLASH_ATTN_VERSION} install failed - continuing without it") && \
     rm -rf /root/.cache/pip /tmp/*
 
