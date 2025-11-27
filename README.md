@@ -72,6 +72,37 @@ llamafactory-cli train configs/your_config.yaml
 |----------|-------------|
 | `WANDB_API_KEY` | Auto-login to Weights & Biases |
 
+### Syncthing Auto-Configuration
+
+Auto-sync with your NAS or remote server:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SYNCTHING_REMOTE_DEVICE_ID` | - | Remote device ID (required for auto-config) |
+| `SYNCTHING_REMOTE_DEVICE_NAME` | `remote` | Name for remote device |
+| `SYNCTHING_MODELS_PATH` | - | Path for models folder (receive only) |
+| `SYNCTHING_MODELS_FOLDER_ID` | `models` | Folder ID for models |
+| `SYNCTHING_MODELS_TYPE` | `receiveonly` | Sync type: receiveonly, sendonly, sendreceive |
+| `SYNCTHING_OUTPUTS_PATH` | - | Path for outputs folder (send only) |
+| `SYNCTHING_OUTPUTS_FOLDER_ID` | `outputs` | Folder ID for outputs |
+| `SYNCTHING_OUTPUTS_TYPE` | `sendonly` | Sync type for outputs |
+
+#### Example: Sync with NAS
+
+```bash
+docker run --gpus all -it \
+  -e SYNCTHING_REMOTE_DEVICE_ID="XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX" \
+  -e SYNCTHING_REMOTE_DEVICE_NAME="nas" \
+  -e SYNCTHING_MODELS_PATH="/workspace/models" \
+  -e SYNCTHING_OUTPUTS_PATH="/workspace/outputs" \
+  -p 8384:8384 -p 22000:22000 \
+  beshkenadze/llama-factory-template:latest
+```
+
+On NAS, configure:
+- `/media/models` → sendonly (sends models to Vast)
+- `/media/outputs` → receiveonly (receives results from Vast)
+
 ## Supported Models
 
 - Qwen2-VL (2B, 7B, 72B)

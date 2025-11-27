@@ -38,9 +38,13 @@ EXPOSE 6006 8384 22000
 # Ensure workspace is accessible by non-root user
 RUN mkdir -p /workspace && chown -R llama:llama /workspace
 
-# Startup script (only exports safe env vars, not secrets)
-RUN printf '#!/bin/bash\n# Export only non-sensitive env vars for cron/subprocess compatibility\nenv | grep -E "^(PATH|HOME|LANG|LC_|TERM|SHELL|USER|HOSTNAME)=" >> /etc/environment 2>/dev/null || true\n# Auto-login wandb if API key is set (skips interactive menu)\n[ -n "$WANDB_API_KEY" ] && python -c "import wandb; wandb.login(key=\\\"$WANDB_API_KEY\\\")"\nsyncthing --no-browser --gui-address=0.0.0.0:8384 &\n[ -d "/workspace/models" ] && tensorboard --logdir=/workspace/models --host=0.0.0.0 --port=6006 &\nexec "$@"\n' > /opt/startup.sh && \
-    chmod +x /opt/startup.sh
+# Copy Syncthing config script
+COPY scripts/syncthing-config.sh /opt/syncthing-config.sh
+RUN chmod +x /opt/syncthing-config.sh
+
+# Startup script
+COPY scripts/startup.sh /opt/startup.sh
+RUN chmod +x /opt/startup.sh
 
 # Switch to non-root user
 USER llama
