@@ -21,8 +21,8 @@ RUN groupadd -g ${GROUP_ID} llama && \
     useradd -m -u ${USER_ID} -g llama -s /bin/bash llama && \
     echo "llama ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install TensorBoard
-RUN uv pip install --system tensorboard
+# Install logging/tracking tools (tensorboard, wandb, mlflow)
+RUN uv pip install --system tensorboard wandb mlflow
 
 # Install flash-attention (optional, warns on failure)
 ARG FLASH_ATTN_VERSION=2.7.4
