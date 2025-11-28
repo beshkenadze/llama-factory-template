@@ -65,6 +65,7 @@ Set via Docker Options (`-e VAR=value`):
 |----------|-------------|
 | `HF_TOKEN` | Hugging Face token for model downloads |
 | `WANDB_API_KEY` | Auto-login to Weights & Biases |
+| `WANDB_PROJECT` | W&B project name (default: `llamafactory`) |
 
 ## Ports
 
@@ -85,6 +86,8 @@ llamafactory-cli train configs/your_config.yaml
 | Variable | Description |
 |----------|-------------|
 | `WANDB_API_KEY` | Auto-login to Weights & Biases |
+| `WANDB_PROJECT` | W&B project name (default: `llamafactory`) |
+| `HF_TOKEN` | Hugging Face token for model downloads |
 
 ### Syncthing Auto-Configuration
 
