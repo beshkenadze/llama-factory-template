@@ -5,8 +5,8 @@ FROM vastai/base-image:${VASTAI_VERSION}
 
 USER root
 
-# Install LLaMA Factory and dependencies
-RUN pip install --no-cache-dir llamafactory && \
+# Install LLaMA Factory and dependencies (torchvision for VLM support)
+RUN pip install --no-cache-dir llamafactory torchvision && \
     rm -rf /root/.cache/pip /tmp/*
 
 # Install logging/tracking tools + flash-attention
