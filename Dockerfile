@@ -28,8 +28,8 @@ ARG FLASH_ATTN_WHEEL=https://github.com/mjun0812/flash-attention-prebuild-wheels
 RUN uv pip install --system tensorboard wandb mlflow "optimum>=1.24.0" && \
     (uv pip install --system --no-deps ${FLASH_ATTN_WHEEL} \
     || echo "WARNING: flash-attention ${FLASH_ATTN_VERSION} install failed - continuing without it") && \
-    (pip install -v gptqmodel --no-build-isolation \
-    || echo "WARNING: gptqmodel install failed - install at runtime with: pip install -v gptqmodel --no-build-isolation") && \
+    (uv pip install --system --no-deps "gptqmodel>=2.0.0" logbar \
+    || echo "WARNING: gptqmodel install failed - install at runtime with: uv pip install --system --no-deps gptqmodel logbar") && \
     rm -rf /root/.cache/pip /root/.cache/uv /tmp/*
 
 WORKDIR /workspace
