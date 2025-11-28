@@ -47,10 +47,25 @@ docker run --gpus all -it \
 docker pull beshkenadze/llama-factory-template:vastai
 ```
 
-On Vast.ai:
-1. Create new instance with custom Docker image
-2. Image: `beshkenadze/llama-factory-template:vastai`
-3. All Vast.ai portal features work automatically
+#### Creating Vast.ai Template
+
+1. Go to **Templates** in Vast.ai console
+2. Click **Edit** to create new template
+3. Configure:
+   - **Image Path**: `beshkenadze/llama-factory-template:vastai`
+   - **Docker Options**: `-e WANDB_API_KEY=your_key -e HF_TOKEN=your_token`
+4. Save template and create instance
+
+#### Environment Variables
+
+Set via Docker Options (`-e VAR=value`):
+
+| Variable | Description |
+|----------|-------------|
+| `HF_TOKEN` | Hugging Face token for model downloads |
+| `WANDB_API_KEY` | Auto-login to Weights & Biases |
+
+Environment variables are automatically persisted to `/etc/environment` for SSH/Jupyter sessions.
 
 ## Ports
 

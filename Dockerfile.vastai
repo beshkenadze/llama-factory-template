@@ -19,9 +19,9 @@ RUN pip install --no-cache-dir wandb mlflow "optimum>=1.24.0" && \
     || echo "WARNING: gptqmodel install failed - install at runtime with: pip install --no-deps gptqmodel logbar") && \
     rm -rf /root/.cache/pip /tmp/*
 
-# Auto-login wandb if API key is set (add to supervisor or entrypoint hook)
-RUN echo '[ -n "$WANDB_API_KEY" ] && python -c "import wandb; wandb.login(key=\"$WANDB_API_KEY\")" 2>/dev/null || true' >> /etc/profile.d/wandb.sh && \
-    chmod +x /etc/profile.d/wandb.sh
+# Persist env vars for SSH/Jupyter sessions and auto-login wandb
+COPY scripts/vastai-env.sh /etc/profile.d/vastai-env.sh
+RUN chmod +x /etc/profile.d/vastai-env.sh
 
 # Switch back to non-root user (vast.ai default)
 USER user
