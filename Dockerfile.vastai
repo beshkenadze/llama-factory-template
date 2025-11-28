@@ -1,13 +1,14 @@
-# Vast.ai Template: LLaMA Factory on Vast.ai Base Image
-# Features: Instance Portal, TLS, Jupyter, Syncthing, TensorBoard (built-in)
-ARG VASTAI_VERSION=cuda-12.4.1-auto
-FROM vastai/base-image:${VASTAI_VERSION}
+# Vast.ai Template: LLaMA Factory base + Vast.ai CLI
+# Use on Vast.ai via SSH (no portal features, but full PyTorch/NCCL support)
+ARG LLAMAFACTORY_VERSION=0.9.4
+FROM hiyouga/llamafactory:${LLAMAFACTORY_VERSION}
 
-USER root
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install LLaMA Factory and dependencies (torchvision for VLM support)
-RUN pip install --no-cache-dir llamafactory torchvision && \
-    rm -rf /root/.cache/pip /tmp/*
+# Install Vast.ai CLI and dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && \
+    pip install --no-cache-dir vastai && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Install logging/tracking tools + flash-attention
 ARG FLASH_ATTN_VERSION=2.7.4
@@ -19,11 +20,13 @@ RUN pip install --no-cache-dir wandb mlflow "optimum>=1.24.0" && \
     || echo "WARNING: gptqmodel install failed - install at runtime with: pip install --no-deps gptqmodel logbar") && \
     rm -rf /root/.cache/pip /tmp/*
 
-# Persist env vars for SSH/Jupyter sessions and auto-login wandb
+WORKDIR /workspace
+
+# Ports: TensorBoard(6006)
+EXPOSE 6006
+
+# Persist env vars and auto-login wandb
 COPY scripts/vastai-env.sh /etc/profile.d/vastai-env.sh
 RUN chmod +x /etc/profile.d/vastai-env.sh
 
-# Switch back to non-root user (vast.ai default)
-USER user
-
-WORKDIR /workspace
+CMD ["bash"]

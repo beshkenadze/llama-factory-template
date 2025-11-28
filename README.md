@@ -6,8 +6,8 @@ Pre-configured Docker images for VLM fine-tuning on Vast.ai with LLaMA Factory.
 
 | Tag | Base Image | Description |
 |-----|------------|-------------|
-| `latest` | `hiyouga/llamafactory` | Full LLaMA Factory with custom tools |
-| `vastai` | `vastai/base-image` | Vast.ai native features + LLaMA Factory |
+| `latest` | `hiyouga/llamafactory` | Full LLaMA Factory + Syncthing |
+| `vastai` | `hiyouga/llamafactory` | LLaMA Factory + Vast.ai CLI (for Vast.ai SSH) |
 
 ## Features
 
@@ -22,11 +22,11 @@ Pre-configured Docker images for VLM fine-tuning on Vast.ai with LLaMA Factory.
 - Syncthing for file sync
 - UV package manager
 
-### `vastai` (Vast.ai Base)
-- Instance Portal with TLS & authentication
-- Jupyter notebook built-in
-- Vast CLI tools
-- Cloudflare tunnel support
+### `vastai` (For Vast.ai SSH)
+- Based on `hiyouga/llamafactory:0.9.4`
+- Vast CLI tools pre-installed
+- Full PyTorch + CUDA + NCCL support
+- Use with SSH launch mode on Vast.ai
 
 ## Quick Start
 
@@ -53,6 +53,7 @@ docker pull beshkenadze/llama-factory-template:vastai
 2. Click **Edit** to create new template
 3. Configure:
    - **Image Path**: `beshkenadze/llama-factory-template:vastai`
+   - **Launch Mode**: SSH or Args/Entrypoint
    - **Docker Options**: `-e WANDB_API_KEY=your_key -e HF_TOKEN=your_token`
 4. Save template and create instance
 
@@ -64,8 +65,6 @@ Set via Docker Options (`-e VAR=value`):
 |----------|-------------|
 | `HF_TOKEN` | Hugging Face token for model downloads |
 | `WANDB_API_KEY` | Auto-login to Weights & Biases |
-
-Environment variables are automatically persisted to `/etc/environment` for SSH/Jupyter sessions.
 
 ## Ports
 
@@ -148,7 +147,7 @@ docker build -f Dockerfile.vastai -t llama-factory-template:vastai .
 
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `VASTAI_VERSION` | `cuda-12.4.1-auto` | Vast.ai base image tag |
+| `LLAMAFACTORY_VERSION` | `0.9.4` | LLaMA Factory base image version |
 | `FLASH_ATTN_VERSION` | `2.7.4` | Flash Attention version |
 
 ## License
