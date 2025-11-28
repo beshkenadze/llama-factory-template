@@ -1,0 +1,20 @@
+services:
+  llama-factory:
+    image: beshkenadze/llama-factory-template:latest
+    container_name: llama-factory
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - WANDB_API_KEY=${WANDB_API_KEY}
+      - WANDB_PROJECT=${WANDB_PROJECT:-llamafactory}
+      - HF_TOKEN=${HF_TOKEN}
+    volumes:
+      - ./workspace:/workspace
+      - ./models:/workspace/models
+      - ./outputs:/workspace/outputs
+    ports:
+      - "6006:6006"     # TensorBoard
+      - "8384:8384"     # Syncthing UI
+      - "22000:22000"   # Syncthing sync
+    stdin_open: true
+    tty: true
