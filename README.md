@@ -14,6 +14,8 @@ Pre-configured Docker images for VLM fine-tuning on Vast.ai with LLaMA Factory.
 ### Both Images
 - LLaMA Factory for fine-tuning
 - Flash Attention 2.7.4
+- QLoRA support (bitsandbytes)
+- VLM support (timm, torchaudio for MiniCPM-V)
 - Wandb & MLflow integration
 - TensorBoard
 
@@ -122,8 +124,10 @@ On NAS, configure:
 
 ## Supported Models
 
+- MiniCPM-V (2, 2.6)
 - Qwen2-VL (2B, 7B, 72B)
 - Qwen2.5-VL (3B, 7B, 72B)
+- InternVL3
 - LLaMA 3
 - And many more via LLaMA Factory
 
