@@ -25,7 +25,7 @@ RUN groupadd -g ${GROUP_ID} llama && \
 # Install logging/tracking tools (tensorboard, wandb, mlflow) + flash-attention
 ARG FLASH_ATTN_VERSION=2.7.4
 ARG FLASH_ATTN_WHEEL=https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.7.4%2Bcu124torch2.5-cp311-cp311-linux_x86_64.whl
-RUN uv pip install --system tensorboard wandb mlflow "optimum>=1.24.0" && \
+RUN uv pip install --system tensorboard wandb mlflow "optimum>=1.24.0" timm && \
     (uv pip install --system --no-deps ${FLASH_ATTN_WHEEL} \
     || echo "WARNING: flash-attention ${FLASH_ATTN_VERSION} install failed - continuing without it") && \
     (uv pip install --system --no-deps "gptqmodel>=2.0.0" logbar \
